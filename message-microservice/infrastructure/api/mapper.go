@@ -1,24 +1,30 @@
 package api
 
-/*func mapJob(job *model.Job) *jobService.Job {
-	jobPb := &jobService.Job{
-		Id:              job.Id.Hex(),
-		UserId:          job.UserID,
-		Position:        job.Position,
-		Description:     job.Description,
-		DailyActivities: job.DailyActivities,
-		Prerequisites:   job.Prerequisites,
-		CompanyName:     job.CompanyName,
-		CompanyLocation: job.CompanyLocation,
-		OpenDate:        job.OpenDate.String(),
+import (
+	messageService "github.com/XWS-BSEP-TIM1-2022/dislinkt/util/proto/message"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"message-microservice/model"
+	"strconv"
+	"strings"
+	"time"
+)
+
+func mapNotification(notification *model.Notification) *messageService.Notification {
+	notificationPb := &messageService.Notification{
+		Id:         notification.Id.Hex(),
+		UserId:     notification.UserID,
+		FromUserId: notification.FromUserID,
+		Message:    notification.Message,
+		Date:       notification.Date.String(),
 	}
-	return jobPb
+	return notificationPb
 }
-func mapJobPb(jobPb *jobService.Job) *model.Job {
-	id, _ := primitive.ObjectIDFromHex(jobPb.Id)
+
+func mapNotificationPb(notificationPb *messageService.Notification) *model.Notification {
+	id, _ := primitive.ObjectIDFromHex(notificationPb.Id)
 	t := time.Now()
-	if jobPb.OpenDate != "" {
-		dateString := strings.Split(jobPb.OpenDate, " ")
+	if notificationPb.Date != "" {
+		dateString := strings.Split(notificationPb.Date, " ")
 		date := strings.Split(dateString[0], "-")
 		year, _ := strconv.Atoi(date[0])
 		month, _ := strconv.Atoi(date[1])
@@ -29,17 +35,12 @@ func mapJobPb(jobPb *jobService.Job) *model.Job {
 		minutes, _ := strconv.Atoi(timeString[1])
 		t = time.Date(year, time.Month(month), day, hour, minutes, 0, 0, time.UTC)
 	}
-	job := &model.Job{
-		Id:              id,
-		UserID:          jobPb.UserId,
-		Position:        jobPb.Position,
-		Description:     jobPb.Description,
-		DailyActivities: jobPb.DailyActivities,
-		Prerequisites:   jobPb.Prerequisites,
-		CompanyName:     jobPb.CompanyName,
-		CompanyLocation: jobPb.CompanyLocation,
-		OpenDate:        t,
+	notification := &model.Notification{
+		Id:         id,
+		UserID:     notificationPb.UserId,
+		FromUserID: notificationPb.FromUserId,
+		Message:    notificationPb.Message,
+		Date:       t,
 	}
-	return job
+	return notification
 }
-*/
