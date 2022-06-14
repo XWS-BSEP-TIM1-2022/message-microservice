@@ -28,6 +28,8 @@ func NewNotificationService(store model.NotificationStore, c *config.Config) *No
 }
 
 func (service *NotificationService) GetAllByUserId(ctx context.Context, userId primitive.ObjectID) ([]*model.Notification, error) {
+	Log.Info("Get all notifications of user with id: " + userId.Hex())
+
 	span := tracer.StartSpanFromContextMetadata(ctx, "GetAllByUserId")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -36,17 +38,21 @@ func (service *NotificationService) GetAllByUserId(ctx context.Context, userId p
 }
 
 func (service *NotificationService) Create(ctx context.Context, notification *model.Notification, notificationType int32) (*model.Notification, error) {
+	Log.Info("Create notification")
+
 	span := tracer.StartSpanFromContextMetadata(ctx, "Create")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 
 	user, err := service.userClient.GetRequest(ctx, &userService.UserIdRequest{UserId: notification.UserID})
 	if err != nil {
+		Log.Error("Create notification. Error: " + err.Error())
 		return nil, err
 	}
 
 	fromUser, err := service.userClient.GetRequest(ctx, &userService.UserIdRequest{UserId: notification.FromUserID})
 	if err != nil {
+		Log.Error("Create notification. Error: " + err.Error())
 		return nil, err
 	}
 
