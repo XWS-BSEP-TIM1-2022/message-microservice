@@ -29,7 +29,7 @@ func (store *NotificationMongoDBStore) GetAllByUserId(ctx context.Context, userI
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 
-	filter := bson.M{"userId": userId}
+	filter := bson.M{"userId": userId.Hex()}
 	return store.filter(ctx, filter)
 }
 

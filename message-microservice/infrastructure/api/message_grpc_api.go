@@ -6,6 +6,7 @@ import (
 	"github.com/XWS-BSEP-TIM1-2022/dislinkt/util/tracer"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"message-microservice/application"
+	"sort"
 )
 
 type MessageHandler struct {
@@ -33,6 +34,10 @@ func (handler *MessageHandler) GetAllNotifications(ctx context.Context, in *mess
 	}
 
 	notifications, err := handler.notificationService.GetAllByUserId(ctx, objectId)
+	sort.Slice(notifications, func(i, j int) bool {
+		return notifications[j].Date.Before(notifications[i].Date)
+	})
+
 	if err != nil {
 		return nil, err
 	}
