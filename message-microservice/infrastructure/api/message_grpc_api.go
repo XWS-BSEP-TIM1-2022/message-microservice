@@ -155,5 +155,21 @@ func (handler *MessageHandler) CreateMessage(ctx context.Context, in *messageSer
 	response := &messageService.GetMessageResponse{
 		Message: messagePb,
 	}
+
+	objectId, err := primitive.ObjectIDFromHex(message.ChatID)
+	if err != nil {
+		return nil, err
+	}
+	chat, _ := handler.chatService.GetChatById(ctx, objectId)
+	if chat.Username == message.Username {
+		notification := mapMessageToNotification(message, chat.FromUserID, chat.UserID)
+		handler.notificationService.Create(ctx, mapNotificationPb(notification), 1)
+	}
+
+	if chat.FromUsername == message.Username {
+		notification := mapMessageToNotification(message, chat.UserID, chat.FromUserID)
+		handler.notificationService.Create(ctx, mapNotificationPb(notification), 1)
+	}
+
 	return response, nil
 }

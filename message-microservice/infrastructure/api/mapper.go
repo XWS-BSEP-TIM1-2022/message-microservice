@@ -103,3 +103,13 @@ func mapMessagePb(messagePb *messageService.Message) *model.Message {
 	}
 	return message
 }
+
+func mapMessageToNotification(message *model.Message, id string, fromUser string) *messageService.Notification {
+	messagePb := &messageService.Notification{
+		Message:    "You have new message from " + message.Username,
+		Date:       message.Date.String(),
+		UserId:     id,
+		FromUserId: fromUser,
+	}
+	return messagePb
+}

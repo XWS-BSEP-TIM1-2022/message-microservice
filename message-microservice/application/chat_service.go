@@ -20,6 +20,16 @@ func NewChatService(store model.ChatStore, config *config.Config) *ChatService {
 	}
 }
 
+func (service *ChatService) GetChatById(ctx context.Context, chatId primitive.ObjectID) (*model.Chat, error) {
+	Log.Info("Get  chat of chat with id: " + chatId.Hex())
+
+	span := tracer.StartSpanFromContextMetadata(ctx, "GetAllByUserId")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	return service.store.GetChatById(ctx, chatId)
+}
+
 func (service *ChatService) GetAllByUserId(ctx context.Context, userId primitive.ObjectID) ([]*model.Chat, error) {
 	Log.Info("Get all chats of user with id: " + userId.Hex())
 

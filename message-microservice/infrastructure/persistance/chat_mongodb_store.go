@@ -42,6 +42,19 @@ func (store *ChatMongoDBStore) GetAllByUserId(ctx context.Context, userId primit
 	return append(users, forUser...), nil
 }
 
+func (store *ChatMongoDBStore) GetChatById(ctx context.Context, chatId primitive.ObjectID) (*model.Chat, error) {
+	span := tracer.StartSpanFromContext(ctx, "GetChatById")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	filter := bson.M{"_id": chatId}
+	users, err1 := store.filterOne(ctx, filter)
+	if err1 != nil {
+		return nil, err1
+	}
+	return users, nil
+}
+
 func (store *ChatMongoDBStore) Create(ctx context.Context, chat *model.Chat, userId primitive.ObjectID, fromUser primitive.ObjectID) (*model.Chat, error) {
 	span := tracer.StartSpanFromContext(ctx, "Create")
 	defer span.Finish()
