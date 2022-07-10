@@ -34,7 +34,7 @@ func (store *ChatMongoDBStore) GetAllByUserId(ctx context.Context, userId primit
 	if err1 != nil {
 		return nil, err1
 	}
-	forFilter := bson.M{"fromUserId": userId.Hex()}
+	forFilter := bson.M{"fromUserID": userId.Hex()}
 	forUser, err2 := store.filter(ctx, forFilter)
 	if err2 != nil {
 		return nil, err2
