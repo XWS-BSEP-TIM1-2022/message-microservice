@@ -49,8 +49,12 @@ func (server *Server) Start() {
 	messageService := server.initMessageService(messageStore, server.config)
 	notificationStore := server.initNotificationStoreStore(server.mongoClient)
 	notificationService := server.initnotificationService(notificationStore, server.config)
+	chatStore := server.initChatStoreStore(server.mongoClient)
+	chatService := server.initChatService(chatStore, server.config)
+	messagesStore := server.initMessagesStoreStore(server.mongoClient)
+	messagesService := server.initMessagesService(messagesStore, server.config)
 
-	messageHandler := server.initMessageHandler(messageService, notificationService)
+	messageHandler := server.initMessageHandler(messageService, notificationService, chatService, messagesService)
 
 	server.startGrpcServer(messageHandler)
 }
@@ -90,8 +94,8 @@ func (server *Server) initMessageService(store model.MessageStore, config *confi
 	return application.NewMessageService(store, config)
 }
 
-func (server *Server) initMessageHandler(service *application.MessageService, notificationService *application.NotificationService) *api.MessageHandler {
-	return api.NewMessageHandler(service, notificationService)
+func (server *Server) initMessageHandler(service *application.MessageService, notificationService *application.NotificationService, chatService *application.ChatService, messageService *application.MessageService) *api.MessageHandler {
+	return api.NewMessageHandler(service, notificationService, chatService, messageService)
 }
 
 func (server *Server) initNotificationStoreStore(client *mongo.Client) model.NotificationStore {
@@ -101,4 +105,22 @@ func (server *Server) initNotificationStoreStore(client *mongo.Client) model.Not
 
 func (server *Server) initnotificationService(store model.NotificationStore, config *config.Config) *application.NotificationService {
 	return application.NewNotificationService(store, config)
+}
+
+func (server *Server) initChatStoreStore(client *mongo.Client) model.ChatStore {
+	store := persistance.NewChatMongoDBStore(client)
+	return store
+}
+
+func (server *Server) initChatService(store model.ChatStore, config *config.Config) *application.ChatService {
+	return application.NewChatService(store, config)
+}
+
+func (server *Server) initMessagesStoreStore(client *mongo.Client) model.MessageStore {
+	store := persistance.NewMessageMongoDBStore(client)
+	return store
+}
+
+func (server *Server) initMessagesService(store model.MessageStore, config *config.Config) *application.MessageService {
+	return application.NewMessageService(store, config)
 }
